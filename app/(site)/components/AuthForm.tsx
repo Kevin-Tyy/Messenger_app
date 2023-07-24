@@ -4,10 +4,12 @@ import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
 import { useState, useCallback } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
+import { BsGithub, BsGoogle } from "react-icons/bs";
+import AuthSocialButton from "./AuthSocialButton";
 type Variant = "LOGIN" | "REGISTER";
 const AuthForm = () => {
 	const [variant, setVariant] = useState<Variant>("LOGIN");
-	const [loading, setLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const toggleVariant = useCallback(() => {
 		setVariant(variant === "LOGIN" ? "REGISTER" : "LOGIN");
 	}, [variant]);
@@ -24,7 +26,7 @@ const AuthForm = () => {
 		},
 	});
 	const onSubmit: SubmitHandler<FieldValues> = (data) => {
-		setLoading(true);
+		setIsLoading(true);
 		if (variant === "LOGIN") {
 			// next auth sign in
 		}
@@ -33,7 +35,7 @@ const AuthForm = () => {
 		}
 	};
 	const socialAction = (action: string) => {
-		setLoading(true);
+		setIsLoading(true);
 		//side in with next auth providers
 	};
 	return (
@@ -41,15 +43,21 @@ const AuthForm = () => {
 			<div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
 				<form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
 					{variant === "REGISTER" && (
-						<Input id="name" label="Name" register={register} errors={errors} />
+						<Input
+							id="name"
+							label="Name"
+							register={register}
+							errors={errors}
+							disabled={isLoading}
+						/>
 					)}
 					<Input
 						id="email"
 						label="Email"
 						type="email"
-						type="email"
 						register={register}
 						errors={errors}
+						disabled={isLoading}
 					/>
 					<Input
 						id="password"
@@ -57,13 +65,48 @@ const AuthForm = () => {
 						type="password"
 						register={register}
 						errors={errors}
+						disabled={isLoading}
 					/>
 					<div>
-						<Button>
-							Button
+						<Button disabled={isLoading} fullWidth type="submit">
+							{variant === "LOGIN" ? "Sign in" : "Register"}
 						</Button>
 					</div>
 				</form>
+				<div className="mt-6">
+					<div className="relative">
+						<div className="absolute inset-0 flex items-center">
+							<div className="w-full border-t border-gray-300" />
+						</div>
+						<div className="relative flex justify-center text-sm">
+							<span className="bg-white px-2 text-gray-500 ">
+								Or continue with
+							</span>
+						</div>
+					</div>
+					<div className="mt-6 flex gap-2">
+						<AuthSocialButton
+							icon={BsGithub}
+							onClick={() => socialAction("github")}
+						/>
+						<AuthSocialButton
+							icon={BsGoogle}
+							onClick={() => socialAction("github")}
+						/>
+					</div>
+				</div>
+				<div className="flex gap-2 justify-center text-sm px-2 mt-6 text-gray-500">
+					<div>
+						{variant === "LOGIN"
+							? "New to messenger?"
+							: "Already have an account?"}
+					</div>
+					<div onClick={toggleVariant} className="underline cursor-pointer">
+						{variant === "LOGIN"
+							? "Create an account"
+							: "Login into your account"}
+					</div>
+				</div>
 			</div>
 		</div>
 	);
