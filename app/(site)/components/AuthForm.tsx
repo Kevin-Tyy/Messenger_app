@@ -2,20 +2,31 @@
 
 import Button from "@/app/components/Button";
 import Input from "@/app/components/inputs/Input";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import AuthSocialButton from "./AuthSocialButton";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 type Variant = "LOGIN" | "REGISTER";
+
 const AuthForm = () => {
+	const session = useSession();
+	const router = useRouter();
+
 	const [variant, setVariant] = useState<Variant>("LOGIN");
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const toggleVariant = useCallback(() => {
 		setVariant(variant === "LOGIN" ? "REGISTER" : "LOGIN");
 	}, [variant]);
+
+	useEffect(() => {
+		if (session?.status === "authenticated") {
+			router.push("/users");
+		}
+	}, [session?.status, router]);
 
 	const {
 		register,
@@ -31,43 +42,46 @@ const AuthForm = () => {
 	const onSubmit: SubmitHandler<FieldValues> = (data) => {
 		setIsLoading(true);
 		if (variant === "LOGIN") {
-			signIn('credentials' , {
-				...data, 
-				redirect : false
-			}).then(( callback ) => {
-				if(callback?.error){
-					toast.error('Invalid credentials');
-				}
-				if(callback?.ok && !callback?.error){
-					toast.success('Logged in! ')
-				}
+			signIn("credentials", {
+				...data,
+				redirect: false,
 			})
-			.finally(() => setIsLoading(false)); 
+				.then((callback) => {
+					if (callback?.error) {
+						toast.error("Invalid credentials");
+					}
+					if (callback?.ok && !callback?.error) {
+						toast.success("Logged in! ");
+						router.push("/users");
+					}
+				})
+				.finally(() => setIsLoading(false));
 		}
 		if (variant === "REGISTER") {
 			// register a new user
-			axios.post('/api/register' , data)
-			.catch(() => toast.error('Something went wrong'))
-			.finally(() => setIsLoading(false))
+			axios
+				.post("/api/register", data)
+				.then(() => signIn('credentials' , data))
+				.catch(() => toast.error("Something went wrong"))
+				.finally(() => setIsLoading(false));
 		}
 	};
 	const socialAction = (action: string) => {
 		setIsLoading(true);
-		signIn(action , {
-			redirect : false
+		signIn(action, {
+			redirect: false,
 		})
-		.then((callback) => {
-			if(callback?.error){
-				toast.error("Invalid credentials");
-			}
-			if(callback?.ok && !callback?.error){
-				toast.success("Logged in!");
-			} 
-		})
-		.finally(() => setIsLoading(false));
-
+			.then((callback) => {
+				if (callback?.error) {
+					toast.error("Invalid credentials");
+				}
+				if (callback?.ok && !callback?.error) {
+					toast.success("Logged in!");
+				}
+			})
+			.finally(() => setIsLoading(false));
 	};
-	 return (
+	return (
 		<div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
 			<div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
 				<form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
