@@ -29,7 +29,7 @@ const DesktopItem: FC<DesktopItemProps> = ({
 					active && "bg-gray-100 text-black"
 				)}
 				href={href}>
-				<Icon clasName="h-6 w-6 shrink-0 " />
+				<Icon className="h-6 w-6 shrink-0" />
 				<span className="sr-only">{label}</span>
 			</Link>
 		</li>
