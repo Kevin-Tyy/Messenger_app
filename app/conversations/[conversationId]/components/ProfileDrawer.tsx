@@ -12,6 +12,7 @@ import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import ConfirmModal from "./ConfirmModal";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import useActiveList from "@/app/hooks/useActiveList";
 // import AvatarGroup from '@/app/components/AvatarGroup';
 // import ConfirmModal from './ConfirmModal';
 
@@ -37,13 +38,14 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 	const title = useMemo(() => {
 		return data.name || otherUser.name;
 	}, [data.name, otherUser.name]);
-
+	const { members } = useActiveList()
+	const isActive = members.indexOf(otherUser?.email!) !== -1;
 	const statusText = useMemo(() => {
 		if (data.isGroup) {
 			return `${data.users.length} members`;
 		}
 
-		return "Active";
+		return isActive ? "Active" : "Offline";
 	}, [data]);
 
 	return (
@@ -162,7 +164,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 											</div>
 										</div>
 									</Dialog.Panel>
-								</Transition.Child>
+								</Transition.Child>  
 							</div>
 						</div>
 					</div>
