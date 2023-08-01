@@ -38,7 +38,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 	const title = useMemo(() => {
 		return data.name || otherUser.name;
 	}, [data.name, otherUser.name]);
-	const { members } = useActiveList()
+	const { members } = useActiveList();
 	const isActive = members.indexOf(otherUser?.email!) !== -1;
 	const statusText = useMemo(() => {
 		if (data.isGroup) {
@@ -46,7 +46,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 		}
 
 		return isActive ? "Active" : "Offline";
-	}, [data]);
+	}, [data, isActive]);
 
 	return (
 		<>
@@ -164,7 +164,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 											</div>
 										</div>
 									</Dialog.Panel>
-								</Transition.Child>  
+								</Transition.Child>
 							</div>
 						</div>
 					</div>

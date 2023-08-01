@@ -4,7 +4,6 @@ import clsx from "clsx";
 import Link from "next/link";
 import React, { FC } from "react";
 interface MobileItemProps {
-	label: string;
 	icon: any;
 	href: string;
 	onClick?: () => void;
